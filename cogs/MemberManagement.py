@@ -1,0 +1,51 @@
+from discord.ext import commands
+from modules import permissions
+from modules import db
+import osuembed
+
+from modules.connections import osu as osu
+
+
+class MemberManagement(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(name="get_members_not_in_db", brief="Get a list of users who are not in db", description="")
+    @commands.check(permissions.is_owner)
+    @commands.guild_only()
+    async def get_members_not_in_db(self, ctx):
+        for member in ctx.guild.members:
+            if not member.bot:
+                if not db.query(["SELECT osu_id FROM users WHERE user_id = ?", [str(member.id)]]):
+                    await ctx.send(member.mention)
+
+    @commands.command(name="get_roleless_members", brief="Get a list of members without a role", description="")
+    @commands.check(permissions.is_owner)
+    @commands.guild_only()
+    async def get_roleless_members(self, ctx, lookup_in_db: str = None):
+        for member in ctx.guild.members:
+            if len(member.roles) < 2:
+                await ctx.send(member.mention)
+                if lookup_in_db:
+                    query = db.query(["SELECT osu_id FROM users WHERE user_id = ?", [str(member.id)]])
+                    if query:
+                        await ctx.send("person above is in my database "
+                                       "and linked to <https://osu.ppy.sh/users/%s>" % (query[0][0]))
+
+    @commands.command(name="get_member_osu_profile",
+                      brief="Check which osu account is a discord account linked to", description="")
+    @commands.check(permissions.is_admin)
+    @commands.guild_only()
+    async def get_member_osu_profile(self, ctx, *, user_id):
+        osu_id = db.query(["SELECT osu_id FROM users WHERE user_id = ?", [str(user_id)]])
+        if osu_id:
+            result = await osu.get_user(u=osu_id[0][0])
+            if result:
+                embed = await osuembed.user(result)
+                await ctx.send(result.url, embed=embed)
+            else:
+                await ctx.send("<https://osu.ppy.sh/users/%s>" % osu_id[0][0])
+
+
+def setup(bot):
+    bot.add_cog(MemberManagement(bot))
