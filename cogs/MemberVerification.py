@@ -194,10 +194,11 @@ class MemberVerification(commands.Cog):
         await channel.send(content="`Verified: %s`" % member.name, embed=embed)
 
     async def member_verification(self, channel, member):
-        user_db_lookup = db.query(["SELECT osu_id, osu_username FROM users WHERE user_id = ?", [str(member.id)]])
+        user_db_lookup = db.query(["SELECT osu_id, osu_username, pp, country FROM users "
+                                   "WHERE user_id = ?", [str(member.id)]])
         if user_db_lookup:
-            country_role = await self.get_country_role(member.guild, str(user_db_lookup[0][5]))
-            pp_role = await self.get_pp_role(member.guild, str(user_db_lookup[0][4]))
+            country_role = await self.get_country_role(member.guild, str(user_db_lookup[0][3]))
+            pp_role = await self.get_pp_role(member.guild, str(user_db_lookup[0][2]))
             try:
                 await member.add_roles(country_role)
                 await member.add_roles(pp_role)

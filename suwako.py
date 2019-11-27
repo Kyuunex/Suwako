@@ -9,7 +9,7 @@ from modules.connections import database_file as database_file
 from modules.connections import bot_token as bot_token
 
 command_prefix = "-"
-app_version = "d20191122"
+app_version = "d20191127"
 client = commands.Bot(command_prefix=command_prefix,
                       description="Suwako %s" % app_version)
 
