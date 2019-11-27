@@ -11,7 +11,7 @@ from modules.connections import bot_token as bot_token
 command_prefix = "-"
 app_version = "d20191127"
 client = commands.Bot(command_prefix=command_prefix,
-                      description="Suwako %s" % app_version)
+                      description=f"Suwako {app_version}")
 
 if not os.path.exists(database_file):
     db.query("CREATE TABLE users "
@@ -53,7 +53,7 @@ async def on_ready():
     if not db.query("SELECT * FROM admins"):
         app_info = await client.application_info()
         db.query(["INSERT INTO admins VALUES (?, ?)", [str(app_info.owner.id), "1"]])
-        print("Added %s to admin list" % app_info.owner.name)
+        print(f"Added {app_info.owner.name} to admin list")
 
 
 client.run(bot_token)

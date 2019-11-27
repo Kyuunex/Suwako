@@ -39,7 +39,7 @@ class MemberVerification(commands.Cog):
                 db.query(["INSERT INTO users VALUES (?,?,?,?,?,?,?,?)",
                           [str(member.id), str(osu_profile.id), str(osu_profile.name), str(osu_profile.join_date),
                            str(osu_profile.pp_raw), str(osu_profile.country), "0", "0"]])
-                await ctx.send(content="Manually Verified: %s" % member.name, embed=embed)
+                await ctx.send(content=f"Manually Verified: {member.name}", embed=embed)
 
     @commands.command(name="verify_restricted", brief="Manually verify a restricted member", description="")
     @commands.check(permissions.is_admin)
@@ -70,7 +70,7 @@ class MemberVerification(commands.Cog):
                 if not member.bot:
                     await self.member_verification(channel, member)
                 else:
-                    await channel.send("beep boop boop beep, %s has joined our army of bots" % member.mention)
+                    await channel.send(f"beep boop boop beep, {member.mention} has joined our army of bots")
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -101,7 +101,7 @@ class MemberVerification(commands.Cog):
                     goodbye_message = random.choice(self.member_goodbye_messages)
                     await channel.send(goodbye_message[0] % member_name, embed=embed)
                 else:
-                    await channel.send("beep boop boop beep, %s has left our army of bots" % member.mention)
+                    await channel.send(f"beep boop boop beep, {member.mention} has left our army of bots")
 
     async def get_country_role(self, guild, country):
         for role_id in self.country_roles:
@@ -114,7 +114,7 @@ class MemberVerification(commands.Cog):
     async def get_pp_role(self, guild, pp):
         for role_id in self.pp_roles:
             if str(guild.id) == str(role_id[1]):
-                if int(float(pp)/1000) == int(float(role_id[0]) / 1000):
+                if int(float(pp) / 1000) == int(float(role_id[0]) / 1000):
                     return discord.utils.get(guild.roles, id=int(role_id[2]))
 
     async def respond_to_verification(self, message):
@@ -159,9 +159,8 @@ class MemberVerification(commands.Cog):
         already_linked_to = db.query(["SELECT osu_id FROM users WHERE user_id = ?", [str(member.id)]])
         if already_linked_to:
             if str(osu_profile.id) != already_linked_to[0][0]:
-                await channel.send("%s it seems like your discord account is already in my database and "
-                                   "is linked to <https://osu.ppy.sh/users/%s>" %
-                                   (member.mention, already_linked_to[0][0]))
+                await channel.send(f"{member.mention} it seems like your discord account is already in my database "
+                                   f"and is linked to <https://osu.ppy.sh/users/{already_linked_to[0][0]}>")
                 return None
             else:
                 try:
@@ -169,15 +168,15 @@ class MemberVerification(commands.Cog):
                     await member.edit(nick=osu_profile.name)
                 except:
                     pass
-                await channel.send(content="%s i already know lol. here, have some roles" % member.mention)
+                await channel.send(content=f"{member.mention} i already know lol. here, have some roles")
                 return None
 
         check_if_new_discord_account = db.query(["SELECT user_id FROM users WHERE osu_id = ?", [str(osu_profile.id)]])
         if check_if_new_discord_account:
             if str(check_if_new_discord_account[0][0]) != str(member.id):
-                await channel.send("this osu account is already linked to <@%s> in my database. "
-                                   "if there's a problem, for example, you got a new discord account, ping kyuunex." %
-                                   (check_if_new_discord_account[0][0]))
+                old_user_id = check_if_new_discord_account[0][0]
+                await channel.send(f"this osu account is already linked to <@{old_user_id}> in my database. "
+                                   "if there's a problem, for example, you got a new discord account, ping kyuunex.")
                 return None
 
         try:
@@ -191,7 +190,7 @@ class MemberVerification(commands.Cog):
         db.query(["INSERT INTO users VALUES (?,?,?,?,?,?,?,?)",
                   [str(member.id), str(osu_profile.id), str(osu_profile.name), str(osu_profile.join_date),
                    str(osu_profile.pp_raw), str(osu_profile.country), "0", "0"]])
-        await channel.send(content="`Verified: %s`" % member.name, embed=embed)
+        await channel.send(content=f"`Verified: {member.name}`", embed=embed)
 
     async def member_verification(self, channel, member):
         user_db_lookup = db.query(["SELECT osu_id, osu_username, pp, country FROM users "
@@ -212,19 +211,20 @@ class MemberVerification(commands.Cog):
                 name = user_db_lookup[0][1]
                 embed = None
             await member.edit(nick=name)
-            await channel.send("Welcome aboard %s! Since we know who you are, I have automatically verified you. "
-                               "Enjoy your stay!" % member.mention,
-                               embed=embed)
+            await channel.send(f"Welcome aboard {member.mention}! Since we know who you are, "
+                               "I have automatically gave you appropriate roles. Enjoy your stay!", embed=embed)
         else:
-            await channel.send("Welcome %s! We have a verification system in this server "
-                               "so we can give you appropriate roles and keep raids/spam out." % member.mention)
             osu_profile = await self.get_osu_profile(member.name)
             if osu_profile:
-                await channel.send(content="Is this your osu! profile? "
+                await channel.send(content=f"Welcome {member.mention}! We have a verification system in this server "
+                                           "so we can give you appropriate roles and keep raids/spam out. \n"
+                                           "Is this your osu! profile? "
                                            "If yes, type `yes`, if not, post a link to your profile.",
                                    embed=await osuembed.user(osu_profile))
             else:
-                await channel.send("Please post a link to your osu! profile and I will verify you instantly.")
+                await channel.send(f"Welcome {member.mention}! We have a verification system in this server "
+                                   "so we can give you appropriate roles and keep raids/spam out. \n"
+                                   "Please post a link to your osu! profile and I will verify you instantly.")
 
     async def get_osu_profile(self, name):
         try:

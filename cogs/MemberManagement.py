@@ -30,7 +30,7 @@ class MemberManagement(commands.Cog):
                     query = db.query(["SELECT osu_id FROM users WHERE user_id = ?", [str(member.id)]])
                     if query:
                         await ctx.send("person above is in my database "
-                                       "and linked to <https://osu.ppy.sh/users/%s>" % (query[0][0]))
+                                       f"and linked to <https://osu.ppy.sh/users/{query[0][0]}>")
 
     @commands.command(name="get_member_osu_profile",
                       brief="Check which osu account is a discord account linked to", description="")
@@ -44,7 +44,7 @@ class MemberManagement(commands.Cog):
                 embed = await osuembed.user(result)
                 await ctx.send(result.url, embed=embed)
             else:
-                await ctx.send("<https://osu.ppy.sh/users/%s>" % osu_id[0][0])
+                await ctx.send(f"<https://osu.ppy.sh/users/{osu_id[0][0]}>")
 
 
 def setup(bot):
