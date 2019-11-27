@@ -156,14 +156,6 @@ class MemberVerification(commands.Cog):
         country_role = await self.get_country_role(member.guild, osu_profile.country)
         pp_role = await self.get_pp_role(member.guild, osu_profile.pp_raw)
 
-        check_if_new_discord_account = db.query(["SELECT user_id FROM users WHERE osu_id = ?", [str(osu_profile.id)]])
-        if check_if_new_discord_account:
-            if str(check_if_new_discord_account[0][0]) != str(member.id):
-                await channel.send("this osu account is already linked to <@%s> in my database. "
-                                   "if there's a problem, for example, you got a new discord account, ping kyuunex." %
-                                   (check_if_new_discord_account[0][0]))
-                return None
-
         already_linked_to = db.query(["SELECT osu_id FROM users WHERE user_id = ?", [str(member.id)]])
         if already_linked_to:
             if str(osu_profile.id) != already_linked_to[0][0]:
@@ -178,6 +170,14 @@ class MemberVerification(commands.Cog):
                 except:
                     pass
                 await channel.send(content="%s i already know lol. here, have some roles" % member.mention)
+                return None
+
+        check_if_new_discord_account = db.query(["SELECT user_id FROM users WHERE osu_id = ?", [str(osu_profile.id)]])
+        if check_if_new_discord_account:
+            if str(check_if_new_discord_account[0][0]) != str(member.id):
+                await channel.send("this osu account is already linked to <@%s> in my database. "
+                                   "if there's a problem, for example, you got a new discord account, ping kyuunex." %
+                                   (check_if_new_discord_account[0][0]))
                 return None
 
         try:
