@@ -75,7 +75,7 @@ class MemberNameSyncing(commands.Cog):
                                               [str(guild.id), str(db_user[1])]])
                             await asyncio.sleep(1)
             print(time.strftime("%X %x %Z") + " | member_name_syncing_loop finished")
-            await asyncio.sleep(7200)
+            await asyncio.sleep(43200)
 
     async def sync_nickname(self, notices_channel, db_user, member, osu_profile):
         now = datetime.datetime.now()
