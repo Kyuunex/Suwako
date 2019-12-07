@@ -9,7 +9,7 @@ from modules.connections import database_file as database_file
 from modules.connections import bot_token as bot_token
 
 command_prefix = "-"
-app_version = "d20191129"
+app_version = "d20191207"
 client = commands.Bot(command_prefix=command_prefix,
                       description=f"Suwako {app_version}")
 
@@ -33,6 +33,7 @@ initial_extensions = [
     "cogs.BotManagement",
     "cogs.MemberManagement",
     "cogs.MemberNameSyncing",
+    "cogs.MemberStatistics",
     "cogs.MemberVerification",
 ]
 
