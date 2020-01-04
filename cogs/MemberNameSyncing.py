@@ -13,7 +13,9 @@ class MemberNameSyncing(commands.Cog):
                                               "WHERE setting = ?",
                                               ["notices"]])
         if self.notices_channel_list:
-            self.bot.loop.create_task(self.member_name_syncing_loop())
+            self.bot.background_tasks.append(
+                self.bot.loop.create_task(self.member_name_syncing_loop())
+            )
 
     @commands.Cog.listener()
     async def on_user_update(self, before, after):
