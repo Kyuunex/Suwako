@@ -9,7 +9,6 @@ from modules.connections import database_file as database_file
 from modules.connections import bot_token as bot_token
 
 command_prefix = "-"
-app_version = "d20200104"
 
 
 if not os.path.exists(database_file):
@@ -41,6 +40,8 @@ class Suwako(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.background_tasks = []
+        self.app_version = (open(".version", "r+").read()).rstrip()
+        self.description = f"Suwako {self.app_version}"
 
         for extension in initial_extensions:
             try:
@@ -68,6 +69,5 @@ class Suwako(commands.Bot):
             print(f"Added {app_info.owner.name} to admin list")
 
 
-client = Suwako(command_prefix=command_prefix,
-                description=f"Suwako {app_version}")
+client = Suwako(command_prefix=command_prefix)
 client.run(bot_token)
