@@ -8,9 +8,6 @@ from modules import db
 from modules.connections import database_file as database_file
 from modules.connections import bot_token as bot_token
 
-command_prefix = "-"
-
-
 if not os.path.exists(database_file):
     db.query("CREATE TABLE users "
              "(user_id, osu_id, osu_username, osu_join_date, pp, country, ranked_maps_amount, no_sync)")
@@ -69,5 +66,5 @@ class Suwako(commands.Bot):
             print(f"Added {app_info.owner.name} to admin list")
 
 
-client = Suwako(command_prefix=command_prefix)
+client = Suwako(command_prefix="-")
 client.run(bot_token)
