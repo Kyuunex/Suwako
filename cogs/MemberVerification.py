@@ -123,6 +123,8 @@ class MemberVerification(commands.Cog):
         return discord.utils.get(guild.roles, id=int(default_role[0][0]))
 
     async def get_pp_role(self, guild, pp):
+        if not pp:
+            pp = 0
         async with self.bot.db.execute("SELECT pp, guild_id, role_id FROM pp_roles") as cursor:
             pp_roles = await cursor.fetchall()
         for role_id in pp_roles:
