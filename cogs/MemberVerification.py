@@ -4,7 +4,6 @@ import discord
 import sqlite3
 from discord.ext import commands
 from modules import permissions
-from modules.connections import osu as osu
 import osuembed
 
 
@@ -23,7 +22,7 @@ class MemberVerification(commands.Cog):
     async def verify(self, ctx, user_id, osu_id):
         member = ctx.guild.get_member(int(user_id))
         if member:
-            osu_profile = await osu.get_user(u=osu_id)
+            osu_profile = await self.bot.osu.get_user(u=osu_id)
             if osu_profile:
                 country_role = await self.get_country_role(member.guild, osu_profile.country)
                 pp_role = await self.get_pp_role(member.guild, osu_profile.pp_raw)
@@ -93,7 +92,7 @@ class MemberVerification(commands.Cog):
                         osu_id = await cursor.fetchall()
                     if osu_id:
                         try:
-                            osu_profile = await osu.get_user(u=osu_id[0][0])
+                            osu_profile = await self.bot.osu.get_user(u=osu_id[0][0])
                             embed = await osuembed.user(osu_profile, 0xffffff, "User left")
                             member_name = osu_profile.name
                         except:
@@ -151,7 +150,7 @@ class MemberVerification(commands.Cog):
         channel = message.channel
         member = message.author
         try:
-            osu_profile = await osu.get_user(u=osu_id)
+            osu_profile = await self.bot.osu.get_user(u=osu_id)
         except:
             await channel.send("i am having connection issues to osu servers, verifying you. "
                                "<@155976140073205761> should look into this")
@@ -248,7 +247,7 @@ class MemberVerification(commands.Cog):
 
     async def get_osu_profile(self, name):
         try:
-            return await osu.get_user(u=name)
+            return await self.bot.osu.get_user(u=name)
         except:
             return None
 
