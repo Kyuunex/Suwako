@@ -28,6 +28,10 @@ def create_tables():
         c.execute("CREATE TABLE users "
                   "(user_id, osu_id, osu_username, osu_join_date, pp, country, ranked_maps_amount, no_sync)")
 
+        c.execute("CREATE TABLE scoretracking_tracklist (osu_id, osu_username)")
+        c.execute("CREATE TABLE scoretracking_channels (osu_id, channel_id, gamemode)")
+        c.execute("CREATE TABLE scoretracking_history (osu_id, score_id)")
+
         c.execute("CREATE TABLE channels (setting, guild_id, channel_id)")
         c.execute("CREATE TABLE roles (setting, guild_id, role_id)")
         c.execute("CREATE TABLE country_roles (country, guild_id, role_id)")

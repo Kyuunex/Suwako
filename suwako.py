@@ -18,6 +18,7 @@ initial_extensions = [
     "cogs.MemberNameSyncing",
     "cogs.MemberStatistics",
     "cogs.MemberVerification",
+    "cogs.ScoreTracking",
 ]
 
 
