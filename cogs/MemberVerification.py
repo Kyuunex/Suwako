@@ -1,6 +1,7 @@
 import random
 
 import discord
+import datetime
 import sqlite3
 from discord.ext import commands
 from modules import permissions
@@ -15,6 +16,9 @@ class MemberVerification(commands.Cog):
         self.verify_channel_list = tuple(c.execute("SELECT channel_id, guild_id FROM channels WHERE setting = ?",
                                                    ["verify"]))
         conn.close()
+        self.post_verification_emotes = [
+            ["FR", "🥖"],
+        ]
 
     @commands.command(name="verify", brief="Manually verify a member", description="")
     @commands.check(permissions.is_admin)
@@ -43,14 +47,43 @@ class MemberVerification(commands.Cog):
 
     @commands.command(name="verify_restricted", brief="Manually verify a restricted member", description="")
     @commands.check(permissions.is_admin)
+    @commands.check(permissions.is_not_ignored)
     async def verify_restricted(self, ctx, user_id, osu_id, username=""):
         await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?)",
                                   [str(user_id), str(osu_id), username, "", "", "", "", ""])
         await self.bot.db.commit()
         await ctx.send("lol ok")
 
+    @commands.command(name="update_user_discord_account", brief="When user switched accounts, apply this")
+    @commands.check(permissions.is_admin)
+    @commands.check(permissions.is_not_ignored)
+    async def update_user_discord_account(self, ctx, old_id, new_id, osu_id=""):
+        if not old_id.isdigit():
+            await ctx.send("old_id must be all digits")
+            return None
+
+        try:
+            old_account = ctx.guild.get_member(int(old_id))
+            if old_account:
+                await ctx.send("kicking old account")
+                await old_account.kick()
+        except Exception as e:
+            await ctx.send(e)
+
+        if not new_id.isdigit():
+            await ctx.send("new_id must be all digits")
+            return None
+
+        await self.bot.db.execute("UPDATE users SET user_id = ? WHERE user_id = ?", [str(new_id), str(old_id)])
+        await self.bot.db.commit()
+
+        if osu_id:
+            await self.verify(ctx, new_id, osu_id)
+        await ctx.send("okay, done")
+
     @commands.command(name="unverify", brief="Unverify a member and delete it from db", description="")
     @commands.check(permissions.is_admin)
+    @commands.check(permissions.is_not_ignored)
     @commands.guild_only()
     async def unverify(self, ctx, user_id):
         await self.bot.db.execute("DELETE FROM users WHERE user_id = ?", [str(user_id)])
@@ -139,7 +172,7 @@ class MemberVerification(commands.Cog):
             profile_id = split_message[4].split("#")[0].split(" ")[0]
             await self.profile_id_verification(message, profile_id)
             return None
-        elif message.content.lower() == "yes":
+        elif message.content.lower() == "yes" and self.is_new_user(message.author) is False:
             profile_id = message.author.name
             await self.profile_id_verification(message, profile_id)
             return None
@@ -234,7 +267,10 @@ class MemberVerification(commands.Cog):
                                "I have automatically gave you appropriate roles. Enjoy your stay!", embed=embed)
         else:
             osu_profile = await self.get_osu_profile(member.name)
-            if osu_profile:
+            if (osu_profile and
+                    (self.is_new_user(member) is False) and
+                    osu_profile.pp_raw and
+                    float(osu_profile.pp_raw) > 0):
                 await channel.send(content=f"Welcome {member.mention}! We have a verification system in this server "
                                            "so we can give you appropriate roles and keep raids/spam out. \n"
                                            "Is this your osu! profile? "
@@ -250,6 +286,22 @@ class MemberVerification(commands.Cog):
             return await self.bot.osu.get_user(u=name)
         except:
             return None
+
+    async def add_obligatory_reaction(self, message, osu_profile):
+        try:
+            if osu_profile.country:
+                for stereotype in self.post_verification_emotes:
+                    if osu_profile.country == stereotype[0]:
+                        await message.add_reaction(stereotype[1])
+        except Exception as e:
+            print(e)
+
+    def is_new_user(self, user):
+        user_creation_ago = datetime.datetime.utcnow() - user.created_at
+        if abs(user_creation_ago).total_seconds() / 2592000 <= 1 and user.avatar is None:
+            return True
+        else:
+            return False
 
 
 def setup(bot):
