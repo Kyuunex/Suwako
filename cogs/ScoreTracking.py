@@ -138,7 +138,7 @@ class ScoreTracking(commands.Cog):
                     for one_user in score_tracklist:
                         await self.checking_process(one_user)
                     print(time.strftime("%X %x %Z") + " | finished checking scores")
-                await asyncio.sleep(1200)
+                await asyncio.sleep(7200)
             except Exception as e:
                 print(time.strftime("%X %x %Z"))
                 print("in scoretracking")
