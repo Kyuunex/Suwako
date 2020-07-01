@@ -3,12 +3,23 @@
 from discord.ext import commands
 import aiosqlite
 from aioosuapi import aioosuapi
+import sys
+import os
 
 from modules import first_run
 
 from modules.connections import bot_token as bot_token
 from modules.connections import osu_api_key as osu_api_key
 from modules.connections import database_file as database_file
+
+user_extensions_directory = "user_extensions"
+
+if not os.path.exists("data"):
+    print("Please configure this bot according to readme file.")
+    sys.exit("data folder and it's contents are missing")
+if not os.path.exists(user_extensions_directory):
+    os.makedirs(user_extensions_directory)
+
 
 first_run.create_tables()
 
@@ -26,7 +37,7 @@ class Suwako(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.background_tasks = []
-        self.app_version = (open(".version", "r+").read()).rstrip()
+        self.app_version = (open(".version", "r+").read()).strip()
         self.description = f"Suwako {self.app_version}"
         self.database_file = database_file
         self.osu = aioosuapi(osu_api_key)
@@ -34,6 +45,15 @@ class Suwako(commands.Bot):
         for extension in initial_extensions:
             try:
                 self.load_extension(extension)
+            except Exception as e:
+                print(e)
+        for user_extension in os.listdir(user_extensions_directory):
+            if not user_extension.endswith(".py"):
+                continue
+            extension_name = user_extension.replace(".py", "")
+            try:
+                self.load_extension(f"{user_extensions_directory}.{extension_name}")
+                print(f"User extension {extension_name} loaded")
             except Exception as e:
                 print(e)
 
