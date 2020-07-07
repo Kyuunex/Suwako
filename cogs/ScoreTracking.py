@@ -58,7 +58,8 @@ class ScoreTracking(commands.Cog):
         user_top_scores = await self.bot.osu.get_user_best(u=user_id, limit="5", m=str(gamemode))
         user = await self.bot.osu.get_user(u=user_id, m=gamemode)
         if user_top_scores:
-            async with await self.bot.db.execute("SELECT * FROM scoretracking_tracklist WHERE osu_id = ?",
+            async with await self.bot.db.execute("SELECT osu_id, osu_username FROM scoretracking_tracklist "
+                                                 "WHERE osu_id = ?",
                                                  [str(user.id)]) as cursor:
                 already_tracked = await cursor.fetchall()
             if not already_tracked:
@@ -73,7 +74,7 @@ class ScoreTracking(commands.Cog):
                     await self.bot.db.execute("INSERT INTO scoretracking_history VALUES (?, ?)",
                                               [str(user.id), str(score.id)])
 
-            async with await self.bot.db.execute("SELECT * FROM scoretracking_channels "
+            async with await self.bot.db.execute("SELECT osu_id, channel_id, gamemode FROM scoretracking_channels "
                                                  "WHERE channel_id = ? AND gamemode = ? AND osu_id = ?",
                                                  [str(channel.id), str(gamemode), str(user.id)]) as cursor:
                 already_tracked_gamemode = await cursor.fetchall()
@@ -109,7 +110,7 @@ class ScoreTracking(commands.Cog):
     @commands.check(permissions.is_admin)
     async def tracklist(self, ctx, everywhere=None):
         channel = ctx.channel
-        async with await self.bot.db.execute("SELECT * FROM scoretracking_tracklist") as cursor:
+        async with await self.bot.db.execute("SELECT osu_id, osu_username FROM scoretracking_tracklist") as cursor:
             tracklist = await cursor.fetchall()
         if tracklist:
             buffer = ":notepad_spiral: **Track list**\n\n"
@@ -131,7 +132,8 @@ class ScoreTracking(commands.Cog):
         while not self.bot.is_closed():
             try:
                 await asyncio.sleep(10)
-                async with await self.bot.db.execute("SELECT * FROM scoretracking_tracklist") as cursor:
+                async with await self.bot.db.execute("SELECT osu_id, osu_username "
+                                                     "FROM scoretracking_tracklist") as cursor:
                     score_tracklist = await cursor.fetchall()
                 if score_tracklist:
                     print(time.strftime("%X %x %Z") + " | started checking scores")
