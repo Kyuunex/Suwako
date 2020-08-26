@@ -6,17 +6,3 @@ It will sync nickname changes.
 and more!
 
 This bot is built using discord.py and uses sqlite3 database.
-
----
-
-## Installation Instructions
-
-1. Install `git` and `Python 3.6` (or newer) if you don't already have them.
-2. Clone this repository using this command `git clone https://github.com/Kyuunex/Suwako.git`.
-3. Install requirements using this command `python3 -m pip install -r requirements.txt`.
-4. Create a folder named `data`, then create `token.txt` and `osu_api_key.txt` inside it. Then put your bot token and osu api key in them. 
-5. To start the bot, run `suwako.bat` if you are on windows or `suwako.sh` if you are on linux. Alternatively, you can manually run `suwako.py` file but I recommend using the included launchers because it starts the bot in a loop which is required by the `-restart` and `-update` commands.
-
-## How to use
-
-1. Use `-help` to bring up the help menu.
