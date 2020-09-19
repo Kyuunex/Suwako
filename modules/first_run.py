@@ -92,7 +92,7 @@ def create_tables():
         c.execute("""
         CREATE TABLE "scoretracking_history" (
             "osu_id"    INTEGER NOT NULL,
-            "score_id"    INTEGER NOT NULL
+            "score_id"    INTEGER NOT NULL UNIQUE
         )
         """)
         c.execute("""
