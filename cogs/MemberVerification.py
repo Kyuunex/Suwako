@@ -50,7 +50,7 @@ class MemberVerification(commands.Cog):
     @commands.check(permissions.is_not_ignored)
     async def verify_restricted(self, ctx, user_id, osu_id, username=""):
         await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
-                                  [int(user_id), int(osu_id), username, "", "", "", "", "", 0])
+                                  [int(user_id), int(osu_id), username, 0, 0, "", 0, 0, 0])
         await self.bot.db.commit()
         await ctx.send("lol ok")
 
