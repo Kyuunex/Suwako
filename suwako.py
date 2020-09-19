@@ -26,7 +26,7 @@ first_run.create_tables()
 initial_extensions = [
     "cogs.BotManagement",
     "cogs.MemberManagement",
-    "cogs.MemberNameSyncing",
+    "cogs.MemberInfoSyncing",
     "cogs.MemberStatistics",
     "cogs.MemberVerification",
     "cogs.ScoreTracking",

@@ -5,7 +5,7 @@ import asyncio
 import datetime
 
 
-class MemberNameSyncing(commands.Cog):
+class MemberInfoSyncing(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.bot.background_tasks.append(
@@ -26,7 +26,7 @@ class MemberNameSyncing(commands.Cog):
 
         async with self.bot.db.execute("SELECT user_id, osu_id, osu_username, osu_join_date, "
                                        "pp, country, ranked_maps_amount, no_sync "
-                                       "FROM users WHERE user_id = ?", [str(after.id)]) as cursor:
+                                       "FROM users WHERE user_id = ?", [int(after.id)]) as cursor:
             query = await cursor.fetchone()
 
         if not query:
@@ -83,7 +83,7 @@ class MemberNameSyncing(commands.Cog):
                 continue
 
             for db_user in user_list:
-                if str(member.id) != str(db_user[0]):
+                if int(member.id) != int(db_user[0]):
                     continue
 
                 try:
@@ -96,20 +96,20 @@ class MemberNameSyncing(commands.Cog):
                 if osu_profile:
                     await self.sync_nickname(notices_channel, db_user, member, osu_profile)
 
-                    if (str(guild.id), str(db_user[1])) in restricted_user_list:
+                    if (int(guild.id), int(db_user[1])) in restricted_user_list:
                         embed = await self.embed_unrestricted(db_user, member)
                         await notices_channel.send(embed=embed)
                         await self.bot.db.execute("DELETE FROM restricted_users "
                                                   "WHERE guild_id = ? AND osu_id = ?",
-                                                  [str(guild.id), str(db_user[1])])
+                                                  [int(guild.id), int(db_user[1])])
                         await self.bot.db.commit()
                 else:
                     # at this point we are sure that the user is restricted.
-                    if not (str(guild.id), str(db_user[1])) in restricted_user_list:
+                    if not (int(guild.id), int(db_user[1])) in restricted_user_list:
                         embed = await self.embed_restricted(db_user, member)
                         await notices_channel.send(embed=embed)
                         await self.bot.db.execute("INSERT INTO restricted_users VALUES (?,?)",
-                                                  [str(guild.id), str(db_user[1])])
+                                                  [int(guild.id), int(db_user[1])])
                         await self.bot.db.commit()
                 await asyncio.sleep(1)
 
@@ -149,8 +149,8 @@ class MemberNameSyncing(commands.Cog):
 
         await self.bot.db.execute("UPDATE users SET country = ?, pp = ?, "
                                   "osu_join_date = ?, osu_username = ? WHERE user_id = ?;",
-                                  [str(osu_profile.country), str(osu_profile.pp_raw),
-                                   str(osu_profile.join_date), str(osu_profile.name), str(member.id)])
+                                  [str(osu_profile.country), int(osu_profile.pp_raw),
+                                   0, str(osu_profile.name), int(member.id)])
         await self.bot.db.commit()
 
     async def embed_namechange(self, db_user, member, osu_profile):
@@ -222,4 +222,4 @@ class MemberNameSyncing(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(MemberNameSyncing(bot))
+    bot.add_cog(MemberInfoSyncing(bot))

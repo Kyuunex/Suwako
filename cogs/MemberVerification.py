@@ -38,10 +38,10 @@ class MemberVerification(commands.Cog):
                     pass
                 embed = await osuembed.user(osu_profile)
                 await self.bot.db.execute("DELETE FROM users WHERE user_id = ?", [str(member.id)])
-                await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?)",
-                                          [str(member.id), str(osu_profile.id), str(osu_profile.name),
-                                           str(osu_profile.join_date),
-                                           str(osu_profile.pp_raw), str(osu_profile.country), "0", "0"])
+                await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
+                                          [int(member.id), int(osu_profile.id), str(osu_profile.name),
+                                           0,
+                                           int(osu_profile.pp_raw), str(osu_profile.country), 0, 0, 0])
                 await self.bot.db.commit()
                 await ctx.send(content=f"Manually Verified: {member.name}", embed=embed)
 
@@ -49,8 +49,8 @@ class MemberVerification(commands.Cog):
     @commands.check(permissions.is_admin)
     @commands.check(permissions.is_not_ignored)
     async def verify_restricted(self, ctx, user_id, osu_id, username=""):
-        await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?)",
-                                  [str(user_id), str(osu_id), username, "", "", "", "", ""])
+        await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
+                                  [int(user_id), int(osu_id), username, "", "", "", "", "", 0])
         await self.bot.db.commit()
         await ctx.send("lol ok")
 
@@ -74,7 +74,7 @@ class MemberVerification(commands.Cog):
             await ctx.send("new_id must be all digits")
             return None
 
-        await self.bot.db.execute("UPDATE users SET user_id = ? WHERE user_id = ?", [str(new_id), str(old_id)])
+        await self.bot.db.execute("UPDATE users SET user_id = ? WHERE user_id = ?", [int(new_id), int(old_id)])
         await self.bot.db.commit()
 
         if osu_id:
@@ -86,7 +86,7 @@ class MemberVerification(commands.Cog):
     @commands.check(permissions.is_not_ignored)
     @commands.guild_only()
     async def unverify(self, ctx, user_id):
-        await self.bot.db.execute("DELETE FROM users WHERE user_id = ?", [str(user_id)])
+        await self.bot.db.execute("DELETE FROM users WHERE user_id = ?", [int(user_id)])
         await self.bot.db.commit()
         member = ctx.guild.get_member(int(user_id))
         if member:
@@ -121,7 +121,7 @@ class MemberVerification(commands.Cog):
                 channel = self.bot.get_channel(int(verify_channel_id[0]))
                 if not member.bot:
                     async with self.bot.db.execute("SELECT osu_id, osu_username FROM users WHERE user_id = ?",
-                                                   [str(member.id)]) as cursor:
+                                                   [int(member.id)]) as cursor:
                         osu_id = await cursor.fetchall()
                     if osu_id:
                         try:
@@ -147,10 +147,10 @@ class MemberVerification(commands.Cog):
         async with self.bot.db.execute("SELECT country, guild_id, role_id FROM country_roles") as cursor:
             country_roles = await cursor.fetchall()
         for role_id in country_roles:
-            if country == role_id[0] and str(guild.id) == str(role_id[1]):
+            if country == role_id[0] and int(guild.id) == int(role_id[1]):
                 return discord.utils.get(guild.roles, id=int(role_id[2]))
         async with self.bot.db.execute("SELECT role_id FROM roles WHERE setting = ? AND guild_id = ?",
-                                       ["default_country", str(guild.id)]) as cursor:
+                                       ["default_country", int(guild.id)]) as cursor:
             default_role = await cursor.fetchall()
         return discord.utils.get(guild.roles, id=int(default_role[0][0]))
 
@@ -203,7 +203,7 @@ class MemberVerification(commands.Cog):
         country_role = await self.get_country_role(member.guild, osu_profile.country)
         pp_role = await self.get_pp_role(member.guild, osu_profile.pp_raw)
 
-        async with self.bot.db.execute("SELECT osu_id FROM users WHERE user_id = ?", [str(member.id)]) as cursor:
+        async with self.bot.db.execute("SELECT osu_id FROM users WHERE user_id = ?", [int(member.id)]) as cursor:
             already_linked_to = await cursor.fetchall()
         if already_linked_to:
             if str(osu_profile.id) != already_linked_to[0][0]:
@@ -219,7 +219,7 @@ class MemberVerification(commands.Cog):
                 await channel.send(content=f"{member.mention} i already know lol. here, have some roles")
                 return None
 
-        async with self.bot.db.execute("SELECT user_id FROM users WHERE osu_id = ?", [str(osu_profile.id)]) as cursor:
+        async with self.bot.db.execute("SELECT user_id FROM users WHERE osu_id = ?", [int(osu_profile.id)]) as cursor:
             check_if_new_discord_account = await cursor.fetchall()
         if check_if_new_discord_account:
             if str(check_if_new_discord_account[0][0]) != str(member.id):
@@ -236,16 +236,16 @@ class MemberVerification(commands.Cog):
             pass
         embed = await osuembed.user(osu_profile)
         await self.bot.db.execute("DELETE FROM users WHERE user_id = ?", [str(member.id)])
-        await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?)",
-                                  [str(member.id), str(osu_profile.id), str(osu_profile.name),
-                                   str(osu_profile.join_date),
-                                   str(osu_profile.pp_raw), str(osu_profile.country), "0", "0"])
+        await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
+                                  [int(member.id), int(osu_profile.id), str(osu_profile.name),
+                                   0,
+                                   int(osu_profile.pp_raw), str(osu_profile.country), 0, 0, 0])
         await self.bot.db.commit()
         await channel.send(content=f"`Verified: {member.name}`", embed=embed)
 
     async def member_verification(self, channel, member):
         async with self.bot.db.execute("SELECT osu_id, osu_username, pp, country FROM users WHERE user_id = ?",
-                                       [str(member.id)]) as cursor:
+                                       [int(member.id)]) as cursor:
             user_db_lookup = await cursor.fetchall()
         if user_db_lookup:
             country_role = await self.get_country_role(member.guild, str(user_db_lookup[0][3]))
