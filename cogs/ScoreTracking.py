@@ -154,13 +154,13 @@ class ScoreTracking(commands.Cog):
                                              [int(user_id)]) as cursor:
             channel_list = await cursor.fetchall()
         if channel_list:
-            await self.check_one_user(user_id, user_name, "0")
+            await self.check_one_user(user_id, user_name, 0)
             await asyncio.sleep(1)
-            await self.check_one_user(user_id, user_name, "1")
+            await self.check_one_user(user_id, user_name, 1)
             await asyncio.sleep(1)
-            await self.check_one_user(user_id, user_name, "2")
+            await self.check_one_user(user_id, user_name, 2)
             await asyncio.sleep(1)
-            await self.check_one_user(user_id, user_name, "3")
+            await self.check_one_user(user_id, user_name, 3)
         else:
             print(f"{user_name} is not tracked anywhere so I am gonna delete it from all tables")
             await self.bot.db.execute("DELETE FROM scoretracking_channels WHERE osu_id = ?", [int(user_id)])
