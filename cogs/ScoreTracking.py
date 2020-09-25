@@ -64,7 +64,7 @@ class ScoreTracking(commands.Cog):
                 already_tracked = await cursor.fetchall()
             if not already_tracked:
                 await self.bot.db.execute("INSERT INTO scoretracking_tracklist VALUES (?,?)",
-                                          [int(user.id), int(user.name)])
+                                          [int(user.id), str(user.name)])
 
             for score in user_top_scores:
                 async with await self.bot.db.execute("SELECT score_id FROM scoretracking_history WHERE score_id = ?",
