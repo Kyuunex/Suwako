@@ -187,6 +187,12 @@ class ScoreTracking(commands.Cog):
                         embed = await self.print_play(score, beatmap, user_name, gamemode)
                         for channel_id in channel_list_gamemode:
                             channel = self.bot.get_channel(int(channel_id[0]))
+                            if not channel:
+                                await self.bot.db.execute("DELETE FROM scoretracking_channels WHERE channel_id = ?",
+                                                          [int(channel_id[0])])
+                                await self.bot.db.commit()
+                                continue
+
                             await channel.send(embed=embed)
                         await self.bot.db.execute("INSERT INTO scoretracking_history VALUES (?, ?)",
                                                   [int(user_id), int(score.id)])
