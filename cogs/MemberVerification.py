@@ -41,7 +41,7 @@ class MemberVerification(commands.Cog):
                 await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
                                           [int(member.id), int(osu_profile.id), str(osu_profile.name),
                                            0,
-                                           int(osu_profile.pp_raw), str(osu_profile.country), 0, 0, 0])
+                                           int(float(osu_profile.pp_raw)), str(osu_profile.country), 0, 0, 0])
                 await self.bot.db.commit()
                 await ctx.send(content=f"Manually Verified: {member.name}", embed=embed)
 
@@ -151,8 +151,11 @@ class MemberVerification(commands.Cog):
                 return discord.utils.get(guild.roles, id=int(role_id[2]))
         async with self.bot.db.execute("SELECT role_id FROM roles WHERE setting = ? AND guild_id = ?",
                                        ["default_country", int(guild.id)]) as cursor:
-            default_role = await cursor.fetchall()
-        return discord.utils.get(guild.roles, id=int(default_role[0][0]))
+            default_role = await cursor.fetchone()
+        if not default_role:
+            print(f"no default_country role configured for {guild.id}")
+            return None
+        return discord.utils.get(guild.roles, id=int(default_role[0]))
 
     async def get_pp_role(self, guild, pp):
         if not pp:
@@ -239,7 +242,7 @@ class MemberVerification(commands.Cog):
         await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
                                   [int(member.id), int(osu_profile.id), str(osu_profile.name),
                                    0,
-                                   int(osu_profile.pp_raw), str(osu_profile.country), 0, 0, 0])
+                                   int(float(osu_profile.pp_raw)), str(osu_profile.country), 0, 0, 0])
         await self.bot.db.commit()
         await channel.send(content=f"`Verified: {member.name}`", embed=embed)
 
