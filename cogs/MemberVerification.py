@@ -37,11 +37,15 @@ class MemberVerification(commands.Cog):
                 except:
                     pass
                 embed = await osuembed.user(osu_profile)
+                if osu_profile.pp_raw:
+                    pp_number = osu_profile.pp_raw
+                else:
+                    pp_number = 0
                 await self.bot.db.execute("DELETE FROM users WHERE user_id = ?", [str(member.id)])
                 await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
                                           [int(member.id), int(osu_profile.id), str(osu_profile.name),
                                            0,
-                                           int(float(osu_profile.pp_raw)), str(osu_profile.country), 0, 0, 0])
+                                           int(float(pp_number)), str(osu_profile.country), 0, 0, 0])
                 await self.bot.db.commit()
                 await ctx.send(content=f"Manually Verified: {member.name}", embed=embed)
 
@@ -238,11 +242,17 @@ class MemberVerification(commands.Cog):
         except:
             pass
         embed = await osuembed.user(osu_profile)
+
+        if osu_profile.pp_raw:
+            pp_number = osu_profile.pp_raw
+        else:
+            pp_number = 0
+
         await self.bot.db.execute("DELETE FROM users WHERE user_id = ?", [str(member.id)])
         await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
                                   [int(member.id), int(osu_profile.id), str(osu_profile.name),
                                    0,
-                                   int(float(osu_profile.pp_raw)), str(osu_profile.country), 0, 0, 0])
+                                   int(float(pp_number)), str(osu_profile.country), 0, 0, 0])
         await self.bot.db.commit()
         await channel.send(content=f"`Verified: {member.name}`", embed=embed)
 
