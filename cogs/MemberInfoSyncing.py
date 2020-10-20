@@ -149,7 +149,7 @@ class MemberInfoSyncing(commands.Cog):
 
         await self.bot.db.execute("UPDATE users SET country = ?, pp = ?, "
                                   "osu_join_date = ?, osu_username = ? WHERE user_id = ?;",
-                                  [str(osu_profile.country), int(osu_profile.pp_raw),
+                                  [str(osu_profile.country), int(float(osu_profile.pp_raw)),
                                    0, str(osu_profile.name), int(member.id)])
         await self.bot.db.commit()
 
