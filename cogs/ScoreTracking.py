@@ -175,7 +175,6 @@ class ScoreTracking(commands.Cog):
                                              [int(user_id), int(gamemode)]) as cursor:
             channel_list_gamemode = await cursor.fetchall()
         if channel_list_gamemode:
-            print(f"Currently checking {user_name} on gamemode {gamemode}")
             user_top_scores = await self.bot.osu.get_user_best(u=user_id, limit="5", m=str(gamemode))
             if user_top_scores:
                 for score in user_top_scores:
