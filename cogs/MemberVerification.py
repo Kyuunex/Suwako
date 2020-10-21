@@ -213,7 +213,7 @@ class MemberVerification(commands.Cog):
         async with self.bot.db.execute("SELECT osu_id FROM users WHERE user_id = ?", [int(member.id)]) as cursor:
             already_linked_to = await cursor.fetchall()
         if already_linked_to:
-            if str(osu_profile.id) != already_linked_to[0][0]:
+            if int(osu_profile.id) != int(already_linked_to[0][0]):
                 await channel.send(f"{member.mention} it seems like your discord account is already in my database "
                                    f"and is linked to <https://osu.ppy.sh/users/{already_linked_to[0][0]}>")
                 return None
@@ -229,7 +229,7 @@ class MemberVerification(commands.Cog):
         async with self.bot.db.execute("SELECT user_id FROM users WHERE osu_id = ?", [int(osu_profile.id)]) as cursor:
             check_if_new_discord_account = await cursor.fetchall()
         if check_if_new_discord_account:
-            if str(check_if_new_discord_account[0][0]) != str(member.id):
+            if int(check_if_new_discord_account[0][0]) != int(member.id):
                 old_user_id = check_if_new_discord_account[0][0]
                 await channel.send(f"this osu account is already linked to <@{old_user_id}> in my database. "
                                    "if there's a problem, for example, you got a new discord account, ping kyuunex.")
