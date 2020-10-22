@@ -3,6 +3,7 @@
 from discord.ext import commands
 import aiosqlite
 from aioosuapi import aioosuapi
+import discord
 import sys
 import os
 
@@ -31,6 +32,9 @@ initial_extensions = [
     "cogs.MemberVerification",
     "cogs.ScoreTracking",
 ]
+
+intents = discord.Intents.default()
+intents.members = True
 
 
 class Suwako(commands.Bot):
@@ -82,5 +86,5 @@ class Suwako(commands.Bot):
         await first_run.add_admins(self)
 
 
-client = Suwako(command_prefix="-")
+client = Suwako(command_prefix="-", intents=intents)
 client.run(bot_token)
