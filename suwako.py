@@ -22,7 +22,7 @@ if not os.path.exists(user_extensions_directory):
     os.makedirs(user_extensions_directory)
 
 
-first_run.create_tables()
+first_run.ensure_tables()
 
 initial_extensions = [
     "cogs.BotManagement",
