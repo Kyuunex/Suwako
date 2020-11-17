@@ -58,7 +58,7 @@ def ensure_tables():
     """)
     c.execute("""
     CREATE TABLE IF NOT EXISTS "member_goodbye_messages" (
-        "message"    TEXT NOT NULL
+        "message"    TEXT NOT NULL UNIQUE
     )
     """)
     c.execute("""
@@ -113,7 +113,7 @@ def ensure_tables():
         "no_sync"    INTEGER
     )
     """)
-    c.execute("INSERT INTO member_goodbye_messages VALUES (?)", ["%s double tapped on hidamari no uta"])
-    c.execute("INSERT INTO member_goodbye_messages VALUES (?)", ["%s missed the last note"])
+    c.execute("INSERT OR IGNORE INTO member_goodbye_messages VALUES (?)", ["%s double tapped on hidamari no uta"])
+    c.execute("INSERT OR IGNORE INTO member_goodbye_messages VALUES (?)", ["%s missed the last note"])
     conn.commit()
     conn.close()
