@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord.utils import escape_markdown
 from suwako.modules import permissions
+from suwako.reusables import exceptions
 from suwako.reusables import send_large_message
 from suwako.modules import cooldown
 from collections import Counter
@@ -91,12 +92,13 @@ class MemberStatistics(commands.Cog):
                     country_object = pycountry.countries.get(name=country_code)
                 country_name = country_object.name
                 country_flag = f":flag_{country_object.alpha_2.lower()}:"
-            except:
+            except Exception as e:
                 await ctx.send(f"{ctx.author.mention}, Country not found. "
                                "Keep in mind that full country names are case-sensitive. \n"
                                "You can also try searching with Alpha-2 and Alpha-3 codes. \n"
                                "If you are not sure what this means, have a look at this "
-                               "<https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>")
+                               "<https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>",
+                               embed=await exceptions.embed_exception(e))
                 return
 
             master_list = []
