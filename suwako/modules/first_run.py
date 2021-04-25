@@ -81,25 +81,6 @@ def ensure_tables():
     )
     """)
     c.execute("""
-    CREATE TABLE IF NOT EXISTS "scoretracking_channels" (
-        "osu_id"    INTEGER NOT NULL,
-        "channel_id"    INTEGER NOT NULL,
-        "gamemode"    INTEGER NOT NULL
-    )
-    """)
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS "scoretracking_history" (
-        "osu_id"    INTEGER NOT NULL,
-        "score_id"    INTEGER NOT NULL UNIQUE
-    )
-    """)
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS "scoretracking_tracklist" (
-        "osu_id"    INTEGER NOT NULL,
-        "osu_username"    TEXT NOT NULL
-    )
-    """)
-    c.execute("""
     CREATE TABLE IF NOT EXISTS "users" (
         "user_id"    INTEGER NOT NULL UNIQUE,
         "osu_id"    INTEGER NOT NULL,
