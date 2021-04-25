@@ -4,8 +4,8 @@ import discord
 import datetime
 import sqlite3
 from discord.ext import commands
-from modules import permissions
-import osuembed
+from suwako.modules import permissions
+from suwako.embeds import oldembeds
 
 
 class MemberVerification(commands.Cog):
@@ -36,7 +36,7 @@ class MemberVerification(commands.Cog):
                     await member.edit(nick=osu_profile.name)
                 except:
                     pass
-                embed = await osuembed.user(osu_profile)
+                embed = await oldembeds.user(osu_profile)
                 if osu_profile.pp_raw:
                     pp_number = osu_profile.pp_raw
                 else:
@@ -130,7 +130,7 @@ class MemberVerification(commands.Cog):
                     if osu_id:
                         try:
                             osu_profile = await self.bot.osu.get_user(u=osu_id[0][0])
-                            embed = await osuembed.user(osu_profile, 0xffffff, "User left")
+                            embed = await oldembeds.user(osu_profile, 0xffffff, "User left")
                             member_name = osu_profile.name
                         except:
                             print("Connection issues?")
@@ -241,7 +241,7 @@ class MemberVerification(commands.Cog):
             await member.edit(nick=osu_profile.name)
         except:
             pass
-        embed = await osuembed.user(osu_profile)
+        embed = await oldembeds.user(osu_profile)
 
         if osu_profile.pp_raw:
             pp_number = osu_profile.pp_raw
@@ -271,7 +271,7 @@ class MemberVerification(commands.Cog):
             osu_profile = await self.get_osu_profile(user_db_lookup[0][0])
             if osu_profile:
                 name = osu_profile.name
-                embed = await osuembed.user(osu_profile)
+                embed = await oldembeds.user(osu_profile)
             else:
                 name = user_db_lookup[0][1]
                 embed = None
@@ -288,7 +288,7 @@ class MemberVerification(commands.Cog):
                                            "so we can give you appropriate roles and keep raids/spam out. \n"
                                            "Is this your osu! profile? "
                                            "If yes, type `yes`, if not, post a link to your profile.",
-                                   embed=await osuembed.user(osu_profile))
+                                   embed=await oldembeds.user(osu_profile))
             else:
                 await channel.send(f"Welcome {member.mention}! We have a verification system in this server "
                                    "so we can give you appropriate roles and keep raids/spam out. \n"

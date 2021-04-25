@@ -1,4 +1,4 @@
-from modules.connections import database_file as database_file
+from suwako.modules.storage_management import database_file
 import sqlite3
 
 admin_list = []

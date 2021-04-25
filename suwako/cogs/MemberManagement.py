@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
-from modules import permissions
-from modules import wrappers
-import osuembed
+from suwako.modules import permissions
+from suwako.reusables import send_large_message
+from suwako.embeds import oldembeds
 
 
 class MemberManagement(commands.Cog):
@@ -40,7 +40,7 @@ class MemberManagement(commands.Cog):
 
             embed = discord.Embed(color=0xbd3661)
             embed.set_author(name="Server Members who are not in the database")
-        await wrappers.send_large_embed(ctx.channel, embed, buffer)
+        await send_large_message.send_large_embed(ctx.channel, embed, buffer)
 
     @commands.command(name="get_roleless_members", brief="Get a list of members without a role")
     @commands.check(permissions.is_owner)
@@ -74,7 +74,7 @@ class MemberManagement(commands.Cog):
                 buffer += f"    ^ <https://osu.ppy.sh/users/{query[0]}>"
             embed = discord.Embed(color=0xbd3661)
             embed.set_author(name="Server Members who do not have a role")
-        await wrappers.send_large_embed(ctx.channel, embed, buffer)
+        await send_large_message.send_large_embed(ctx.channel, embed, buffer)
 
     @commands.command(name="get_member_osu_profile", brief="Check which osu account is a discord account linked to")
     @commands.check(permissions.is_admin)
@@ -95,7 +95,7 @@ class MemberManagement(commands.Cog):
             await ctx.send(f"<https://osu.ppy.sh/users/{osu_id[0]}>")
             return
 
-        embed = await osuembed.user(result)
+        embed = await oldembeds.user(result)
         await ctx.send(result.url, embed=embed)
 
 

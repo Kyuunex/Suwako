@@ -1,9 +1,9 @@
 import discord
 from discord.ext import commands
 from discord.utils import escape_markdown
-from modules import permissions
-from modules import wrappers
-from modules import cooldown
+from suwako.modules import permissions
+from suwako.reusables import send_large_message
+from suwako.modules import cooldown
 from collections import Counter
 import operator
 import pycountry
@@ -63,7 +63,7 @@ class MemberStatistics(commands.Cog):
 
             embed = discord.Embed(color=0xbd3661)
             embed.set_author(name="Server Demographics")
-        await wrappers.send_large_embed(ctx.channel, embed, buffer)
+        await send_large_message.send_large_embed(ctx.channel, embed, buffer)
 
     @commands.command(name="from", brief="Get a list of members from specified country")
     @commands.guild_only()
@@ -123,7 +123,7 @@ class MemberStatistics(commands.Cog):
 
             embed = discord.Embed(color=0xbd3661)
             embed.set_author(name="Country Demographics")
-        await wrappers.send_large_embed(ctx.channel, embed, contents)
+        await send_large_message.send_large_embed(ctx.channel, embed, contents)
 
     async def stats_calc(self, data):
         results = dict(Counter(data))

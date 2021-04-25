@@ -1,36 +1,32 @@
 #!/usr/bin/env python3
-
 from discord.ext import commands
 import aiosqlite
 from aioosuapi import aioosuapi
 import discord
-import sys
 import os
 
-from modules import first_run
+from suwako.modules import first_run
+from suwako.manifest import VERSION
+from suwako.manifest import CONTRIBUTORS
 
-from modules.connections import bot_token as bot_token
-from modules.connections import osu_api_key as osu_api_key
-from modules.connections import database_file as database_file
+from suwako.modules.connections import bot_token as bot_token
+from suwako.modules.connections import osu_api_key as osu_api_key
+from suwako.modules.storage_management import database_file as database_file
 
-user_extensions_directory = "user_extensions"
 
-if not os.path.exists("data"):
-    print("Please configure this bot according to readme file.")
-    sys.exit("data folder and it's contents are missing")
-if not os.path.exists(user_extensions_directory):
-    os.makedirs(user_extensions_directory)
-
+if os.environ.get('SUWAKO_PREFIX'):
+    command_prefix = os.environ.get('SUWAKO_PREFIX')
+else:
+    command_prefix = "-"
 
 first_run.ensure_tables()
 
 initial_extensions = [
-    "cogs.BotManagement",
-    "cogs.MemberManagement",
-    "cogs.MemberInfoSyncing",
-    "cogs.MemberStatistics",
-    "cogs.MemberVerification",
-    "cogs.ScoreTracking",
+    "suwako.cogs.BotManagement",
+    "suwako.cogs.MemberManagement",
+    "suwako.cogs.MemberInfoSyncing",
+    "suwako.cogs.MemberStatistics",
+    "suwako.cogs.MemberVerification",
 ]
 
 intents = discord.Intents.default()
@@ -41,25 +37,31 @@ class Suwako(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.background_tasks = []
-        self.app_version = (open(".version", "r+").read()).strip()
+
+        self.app_version = VERSION
+        self.project_contributors = CONTRIBUTORS
+
         self.description = f"Suwako {self.app_version}"
         self.database_file = database_file
         self.osu = aioosuapi(osu_api_key)
+
+        # conn = sqlite3.connect(self.database_file)
+        # c = conn.cursor()
+        # self.user_extensions = tuple(c.execute("SELECT extension_name FROM user_extensions"))
+        # conn.close()
 
         for extension in initial_extensions:
             try:
                 self.load_extension(extension)
             except Exception as e:
                 print(e)
-        for user_extension in os.listdir(user_extensions_directory):
-            if not user_extension.endswith(".py"):
-                continue
-            extension_name = user_extension.replace(".py", "")
-            try:
-                self.load_extension(f"{user_extensions_directory}.{extension_name}")
-                print(f"User extension {extension_name} loaded")
-            except Exception as e:
-                print(e)
+
+        # for user_extension in self.user_extensions:
+        #     try:
+        #         self.load_extension(user_extension[0])
+        #         print(f"User extension {user_extension[0]} loaded")
+        #     except discord.ext.commands.errors.ExtensionNotFound as ex:
+        #         print(ex)
 
     async def start(self, *args, **kwargs):
         self.db = await aiosqlite.connect(self.database_file)
@@ -86,5 +88,5 @@ class Suwako(commands.Bot):
         await first_run.add_admins(self)
 
 
-client = Suwako(command_prefix="-", intents=intents)
+client = Suwako(command_prefix=command_prefix, intents=intents)
 client.run(bot_token)

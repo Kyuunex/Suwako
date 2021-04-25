@@ -1,6 +1,5 @@
 import sqlite3
-from modules.connections import database_file as database_file
-import os
+from suwako.modules.storage_management import database_file
 
 
 async def add_admins(self):
