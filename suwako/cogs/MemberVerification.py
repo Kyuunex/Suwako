@@ -29,7 +29,7 @@ class MemberVerification(commands.Cog):
             osu_profile = await self.bot.osu.get_user(u=osu_id)
             if osu_profile:
                 country_role = await self.get_country_role(member.guild, osu_profile.country)
-                pp_role = await self.get_pp_role(member.guild, osu_profile.pp_raw)
+                pp_role = await self.get_pp_role(member.guild, int(osu_profile.pp_raw))
                 try:
                     await member.add_roles(country_role)
                     await member.add_roles(pp_role)
@@ -41,7 +41,7 @@ class MemberVerification(commands.Cog):
                     pp_number = osu_profile.pp_raw
                 else:
                     pp_number = 0
-                await self.bot.db.execute("DELETE FROM users WHERE user_id = ?", [str(member.id)])
+                await self.bot.db.execute("DELETE FROM users WHERE user_id = ?", [int(member.id)])
                 await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
                                           [int(member.id), int(osu_profile.id), str(osu_profile.name),
                                            0,
@@ -167,7 +167,7 @@ class MemberVerification(commands.Cog):
         async with self.bot.db.execute("SELECT pp, guild_id, role_id FROM pp_roles") as cursor:
             pp_roles = await cursor.fetchall()
         for role_id in pp_roles:
-            if str(guild.id) == str(role_id[1]):
+            if int(guild.id) == int(role_id[1]):
                 if int(float(pp) / 1000) == int(float(role_id[0]) / 1000):
                     return discord.utils.get(guild.roles, id=int(role_id[2]))
 
@@ -208,7 +208,7 @@ class MemberVerification(commands.Cog):
             return None
 
         country_role = await self.get_country_role(member.guild, osu_profile.country)
-        pp_role = await self.get_pp_role(member.guild, osu_profile.pp_raw)
+        pp_role = await self.get_pp_role(member.guild, int(osu_profile.pp_raw))
 
         async with self.bot.db.execute("SELECT osu_id FROM users WHERE user_id = ?", [int(member.id)]) as cursor:
             already_linked_to = await cursor.fetchall()
@@ -248,7 +248,7 @@ class MemberVerification(commands.Cog):
         else:
             pp_number = 0
 
-        await self.bot.db.execute("DELETE FROM users WHERE user_id = ?", [str(member.id)])
+        await self.bot.db.execute("DELETE FROM users WHERE user_id = ?", [int(member.id)])
         await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
                                   [int(member.id), int(osu_profile.id), str(osu_profile.name),
                                    0,
