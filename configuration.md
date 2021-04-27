@@ -29,3 +29,12 @@ INSERT INTO channels VALUES ('verify', 216149444733829120, 727784609890172989)
 ```
 Replace the first number with the server/guild ID, replace the second number with the channel ID.  
 **This specific change requires a restart to apply**
+
+---
+## PP roles
+This is an optional feature and can be left disabled if desired. You can use the following SQL command to configure
+```sqlite
+INSERT INTO pp_roles VALUES (1000, 216149444733829120, 418807617629061121)
+```
+first number is pp amount, second is server/guild ID, third is role ID.  
+You do this for every 1000 pp
