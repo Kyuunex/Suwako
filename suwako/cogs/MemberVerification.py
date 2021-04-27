@@ -193,7 +193,7 @@ class MemberVerification(commands.Cog):
             osu_profile = await self.bot.osu.get_user(u=osu_id)
         except:
             await channel.send("i am having connection issues to osu servers, verifying you. "
-                               "<@155976140073205761> should look into this")
+                               "ping staff to investigate if you are in a hurry")
             return None
 
         if not osu_profile:
@@ -232,7 +232,7 @@ class MemberVerification(commands.Cog):
             if int(check_if_new_discord_account[0][0]) != int(member.id):
                 old_user_id = check_if_new_discord_account[0][0]
                 await channel.send(f"this osu account is already linked to <@{old_user_id}> in my database. "
-                                   "if there's a problem, for example, you got a new discord account, ping kyuunex.")
+                                   "if there's a problem, for example, you got a new discord account, ping staff.")
                 return None
 
         try:
