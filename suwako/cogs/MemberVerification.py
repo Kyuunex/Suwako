@@ -42,7 +42,7 @@ class MemberVerification(commands.Cog):
                 else:
                     pp_number = 0
                 await self.bot.db.execute("DELETE FROM users WHERE user_id = ?", [int(member.id)])
-                await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
+                await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?,?)",
                                           [int(member.id), int(osu_profile.id), str(osu_profile.name),
                                            0,
                                            int(float(pp_number)), str(osu_profile.country), 0, 0, 0, 0])
@@ -53,7 +53,7 @@ class MemberVerification(commands.Cog):
     @commands.check(permissions.is_admin)
     @commands.check(permissions.is_not_ignored)
     async def verify_restricted(self, ctx, user_id, osu_id, username=""):
-        await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
+        await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?,?)",
                                   [int(user_id), int(osu_id), username, 0, 0, "", 0, 0, 0, 0])
         await self.bot.db.commit()
         await ctx.send("lol ok")
@@ -249,7 +249,7 @@ class MemberVerification(commands.Cog):
             pp_number = 0
 
         await self.bot.db.execute("DELETE FROM users WHERE user_id = ?", [int(member.id)])
-        await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
+        await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?,?)",
                                   [int(member.id), int(osu_profile.id), str(osu_profile.name),
                                    0,
                                    int(float(pp_number)), str(osu_profile.country), 0, 0, 0, 0])
