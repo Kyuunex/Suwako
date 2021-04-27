@@ -45,7 +45,7 @@ class MemberVerification(commands.Cog):
                 await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
                                           [int(member.id), int(osu_profile.id), str(osu_profile.name),
                                            0,
-                                           int(float(pp_number)), str(osu_profile.country), 0, 0, 0])
+                                           int(float(pp_number)), str(osu_profile.country), 0, 0, 0, 0])
                 await self.bot.db.commit()
                 await ctx.send(content=f"Manually Verified: {member.name}", embed=embed)
 
@@ -54,7 +54,7 @@ class MemberVerification(commands.Cog):
     @commands.check(permissions.is_not_ignored)
     async def verify_restricted(self, ctx, user_id, osu_id, username=""):
         await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
-                                  [int(user_id), int(osu_id), username, 0, 0, "", 0, 0, 0])
+                                  [int(user_id), int(osu_id), username, 0, 0, "", 0, 0, 0, 0])
         await self.bot.db.commit()
         await ctx.send("lol ok")
 
@@ -252,7 +252,7 @@ class MemberVerification(commands.Cog):
         await self.bot.db.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)",
                                   [int(member.id), int(osu_profile.id), str(osu_profile.name),
                                    0,
-                                   int(float(pp_number)), str(osu_profile.country), 0, 0, 0])
+                                   int(float(pp_number)), str(osu_profile.country), 0, 0, 0, 0])
         await self.bot.db.commit()
         await channel.send(content=f"`Verified: {member.name}`", embed=embed)
 

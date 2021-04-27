@@ -90,7 +90,8 @@ def ensure_tables():
         "country"    TEXT,
         "ranked_maps_amount"    INTEGER,
         "kudosu"    INTEGER,
-        "no_sync"    INTEGER
+        "no_sync"    INTEGER,
+        "confirmed"    INTEGER
     )
     """)
     c.execute("INSERT OR IGNORE INTO member_goodbye_messages VALUES (?)", ["%s double tapped on hidamari no uta"])
