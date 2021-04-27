@@ -166,6 +166,8 @@ class MemberVerification(commands.Cog):
             pp = 0
         async with self.bot.db.execute("SELECT pp, guild_id, role_id FROM pp_roles") as cursor:
             pp_roles = await cursor.fetchall()
+        if not pp_roles:
+            return None
         for role_id in pp_roles:
             if int(guild.id) == int(role_id[1]):
                 if int(float(pp) / 1000) == int(float(role_id[0]) / 1000):
@@ -237,7 +239,8 @@ class MemberVerification(commands.Cog):
 
         try:
             await member.add_roles(country_role)
-            await member.add_roles(pp_role)
+            if pp_role:
+                await member.add_roles(pp_role)
             await member.edit(nick=osu_profile.name)
         except:
             pass
