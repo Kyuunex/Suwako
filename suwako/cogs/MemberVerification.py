@@ -32,7 +32,8 @@ class MemberVerification(commands.Cog):
                 pp_role = await self.get_pp_role(member.guild, int(osu_profile.pp_raw))
                 try:
                     await member.add_roles(country_role)
-                    await member.add_roles(pp_role)
+                    if pp_role:
+                        await member.add_roles(pp_role)
                     await member.edit(nick=osu_profile.name)
                 except:
                     pass
@@ -268,7 +269,8 @@ class MemberVerification(commands.Cog):
             pp_role = await self.get_pp_role(member.guild, str(user_db_lookup[0][2]))
             try:
                 await member.add_roles(country_role)
-                await member.add_roles(pp_role)
+                if pp_role:
+                    await member.add_roles(pp_role)
             except:
                 pass
             osu_profile = await self.get_osu_profile(user_db_lookup[0][0])
