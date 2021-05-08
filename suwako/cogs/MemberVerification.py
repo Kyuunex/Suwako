@@ -211,7 +211,7 @@ class MemberVerification(commands.Cog):
             return None
 
         country_role = await self.get_country_role(member.guild, osu_profile.country)
-        pp_role = await self.get_pp_role(member.guild, int(osu_profile.pp_raw))
+        pp_role = await self.get_pp_role(member.guild, int(float(osu_profile.pp_raw)))
 
         async with self.bot.db.execute("SELECT osu_id FROM users WHERE user_id = ?", [int(member.id)]) as cursor:
             already_linked_to = await cursor.fetchall()
