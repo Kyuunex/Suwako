@@ -29,7 +29,7 @@ class MemberVerification(commands.Cog):
             osu_profile = await self.bot.osu.get_user(u=osu_id)
             if osu_profile:
                 country_role = await self.get_country_role(member.guild, osu_profile.country)
-                pp_role = await self.get_pp_role(member.guild, int(osu_profile.pp_raw))
+                pp_role = await self.get_pp_role(member.guild, int(float(osu_profile.pp_raw)))
                 try:
                     await member.add_roles(country_role)
                     if pp_role:
