@@ -183,8 +183,8 @@ class MemberVerification(commands.Cog):
             await self.profile_id_verification(message, profile_id)
             return None
         elif message.content.lower() == "yes" and self.is_new_user(message.author) is False:
-            profile_id = message.author.name
-            await self.profile_id_verification(message, profile_id)
+            # profile_id = message.author.name
+            # await self.profile_id_verification(message, profile_id)
             return None
         else:
             return None
@@ -284,7 +284,8 @@ class MemberVerification(commands.Cog):
             await channel.send(f"Welcome aboard {member.mention}! Since we know who you are, "
                                "I have automatically gave you appropriate roles. Enjoy your stay!", embed=embed)
         else:
-            osu_profile = await self.get_osu_profile(member.name)
+            # osu_profile = await self.get_osu_profile(member.name)
+            osu_profile = None
             if (osu_profile and
                     (self.is_new_user(member) is False) and
                     osu_profile.pp_raw and
