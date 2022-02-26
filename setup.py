@@ -22,7 +22,7 @@ setup(
         'aiosqlite',
         'aiohttp',
         'psutil',
-        'aioosuapi @ git+https://github.com/Kyuunex/aioosuapi.git@1.2.1',
+        'aioosuapi @ git+https://github.com/Kyuunex/aioosuapi.git@1.2.4',
         'appdirs'
     ],
 )

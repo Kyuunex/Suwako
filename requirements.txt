@@ -3,5 +3,5 @@ pycountry
 aiosqlite
 aiohttp
 psutil
-git+https://github.com/Kyuunex/aioosuapi.git@1.2.1
+git+https://github.com/Kyuunex/aioosuapi.git@1.2.4
 appdirs
