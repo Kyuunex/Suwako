@@ -2,7 +2,6 @@ import random
 
 import discord
 import datetime
-import sqlite3
 from discord.ext import commands
 from suwako.modules import permissions
 from suwako.embeds import oldembeds
@@ -10,13 +9,9 @@ from aioosuapi import exceptions as aioosuapi_exceptions
 
 
 class MemberVerification(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, verify_channel_list):
         self.bot = bot
-        conn = sqlite3.connect(self.bot.database_file)
-        c = conn.cursor()
-        self.verify_channel_list = tuple(c.execute("SELECT channel_id, guild_id FROM channels WHERE setting = ?",
-                                                   ["verify"]))
-        conn.close()
+        self.verify_channel_list = verify_channel_list
         self.post_verification_emotes = [
             ["FR", "🥖"],
         ]
@@ -325,4 +320,7 @@ class MemberVerification(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(MemberVerification(bot))
+    async with bot.db.execute("SELECT channel_id, guild_id FROM channels WHERE setting = ?", ["verify"]) as cursor:
+        verify_channel_list = await cursor.fetchall()
+
+    await bot.add_cog(MemberVerification(bot, verify_channel_list))
