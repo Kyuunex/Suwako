@@ -158,14 +158,14 @@ class MemberVerification(commands.Cog):
             country_roles = await cursor.fetchall()
         for role_id in country_roles:
             if country == role_id[0] and int(guild.id) == int(role_id[1]):
-                return discord.utils.get(guild.roles, id=int(role_id[2]))
+                return guild.get_role(int(role_id[2]))
         async with self.bot.db.execute("SELECT role_id FROM roles WHERE setting = ? AND guild_id = ?",
                                        ["default_country", int(guild.id)]) as cursor:
             default_role = await cursor.fetchone()
         if not default_role:
             print(f"no default_country role configured for {guild.id}")
             return None
-        return discord.utils.get(guild.roles, id=int(default_role[0]))
+        return guild.get_role(int(default_role[0]))
 
     async def get_pp_role(self, guild, pp):
         if not pp:
@@ -177,7 +177,7 @@ class MemberVerification(commands.Cog):
         for role_id in pp_roles:
             if int(guild.id) == int(role_id[1]):
                 if int(float(pp) / 1000) == int(float(role_id[0]) / 1000):
-                    return discord.utils.get(guild.roles, id=int(role_id[2]))
+                    return guild.get_role(int(role_id[2]))
 
     async def respond_to_verification(self, message):
         split_message = []
