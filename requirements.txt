@@ -1,4 +1,4 @@
-discord.py[voice]==1.7.3
+discord.py[voice]==2.1.0
 pycountry
 aiosqlite
 aiohttp
