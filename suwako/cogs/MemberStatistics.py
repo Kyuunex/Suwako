@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from discord.utils import escape_markdown
 from suwako.modules import permissions
-from suwako.reusables import exceptions
 from suwako.reusables import send_large_message
 from suwako.modules import cooldown
 from collections import Counter
@@ -53,11 +52,12 @@ class MemberStatistics(commands.Cog):
                 rank += 1
                 amount = str(stat[1]) + " Members"
                 percentage = str(round(float(int(stat[1]) * 100 / member_amount), 2))
-                try:
-                    country_object = pycountry.countries.get(alpha_2=stat[0])
+
+                country_object = pycountry.countries.get(alpha_2=stat[0])
+                if country_object:
                     country_name = country_object.name
                     country_flag = f":flag_{stat[0].lower()}:"
-                except:
+                else:
                     country_flag = ":flag_white:"
                     country_name = "??" + stat[0]
                 buffer += f"**[{rank}]** : {country_flag} **{country_name}** : {amount} : {percentage} % \n"
@@ -83,22 +83,22 @@ class MemberStatistics(commands.Cog):
                 return
 
         async with ctx.channel.typing():
-            try:
-                if len(country_code) == 2:
-                    country_object = pycountry.countries.get(alpha_2=country_code.upper())
-                elif len(country_code) == 3:
-                    country_object = pycountry.countries.get(alpha_3=country_code.upper())
-                else:
-                    country_object = pycountry.countries.get(name=country_code)
+            if len(country_code) == 2:
+                country_object = pycountry.countries.get(alpha_2=country_code.upper())
+            elif len(country_code) == 3:
+                country_object = pycountry.countries.get(alpha_3=country_code.upper())
+            else:
+                country_object = pycountry.countries.get(name=country_code)
+
+            if country_object:
                 country_name = country_object.name
                 country_flag = f":flag_{country_object.alpha_2.lower()}:"
-            except Exception as e:
+            else:
                 await ctx.send(f"{ctx.author.mention}, Country not found. "
                                "Keep in mind that full country names are case-sensitive. \n"
                                "You can also try searching with Alpha-2 and Alpha-3 codes. \n"
                                "If you are not sure what this means, have a look at this "
-                               "<https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>",
-                               embed=await exceptions.embed_exception(e))
+                               "<https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>")
                 return
 
             master_list = []

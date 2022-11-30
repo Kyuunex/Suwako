@@ -26,13 +26,20 @@ class MemberVerification(commands.Cog):
             if osu_profile:
                 country_role = await self.get_country_role(member.guild, osu_profile.country)
                 pp_role = await self.get_pp_role(member.guild, int(float(osu_profile.pp_raw)))
+
                 try:
                     await member.add_roles(country_role)
                     if pp_role:
                         await member.add_roles(pp_role)
+                except discord.Forbidden as e:
+                    print(e)
+                    await ctx.send("i can't give the role")
+
+                try:
                     await member.edit(nick=osu_profile.name)
-                except:
-                    pass
+                except discord.Forbidden as e:
+                    await ctx.send("i can't update the nickname of this user")
+
                 embed = await oldembeds.user(osu_profile)
                 if osu_profile.pp_raw:
                     pp_number = osu_profile.pp_raw
@@ -68,8 +75,8 @@ class MemberVerification(commands.Cog):
             if old_account:
                 await ctx.send("kicking old account")
                 await old_account.kick()
-        except Exception as e:
-            await ctx.send(e)
+        except discord.Forbidden as e:
+            print(e)
 
         if not new_id.isdigit():
             await ctx.send("new_id must be all digits")
@@ -95,7 +102,8 @@ class MemberVerification(commands.Cog):
                 await member.edit(roles=[])
                 await member.edit(nick=None)
                 await ctx.send("Done")
-            except:
+            except discord.Forbidden as e:
+                print(e)
                 await ctx.send("no perms to change nickname and/or remove roles")
 
     @commands.Cog.listener()
@@ -129,8 +137,9 @@ class MemberVerification(commands.Cog):
                             osu_profile = await self.bot.osu.get_user(u=osu_id[0][0])
                             embed = await oldembeds.user(osu_profile, 0xffffff, "User left")
                             member_name = osu_profile.name
-                        except:
+                        except aioosuapi_exceptions.HTTPException as e:
                             print("Connection issues?")
+                            print(e)
                             embed = None
                             member_name = member.name
                     else:
@@ -190,7 +199,8 @@ class MemberVerification(commands.Cog):
         member = message.author
         try:
             osu_profile = await self.bot.osu.get_user(u=osu_id)
-        except:
+        except aioosuapi_exceptions.HTTPException as e:
+            print(e)
             await channel.send("i am having connection issues to osu servers, verifying you. "
                                "ping staff to investigate if you are in a hurry")
             return None
@@ -220,8 +230,8 @@ class MemberVerification(commands.Cog):
                 try:
                     await member.add_roles(country_role)
                     await member.edit(nick=osu_profile.name)
-                except:
-                    pass
+                except discord.Forbidden:
+                    await channel.send(content=f"{member.mention} i don't seem to have perms to do this")
                 await channel.send(content=f"{member.mention} i already know lol. here, have some roles")
                 return None
 
@@ -239,8 +249,8 @@ class MemberVerification(commands.Cog):
             if pp_role:
                 await member.add_roles(pp_role)
             await member.edit(nick=osu_profile.name)
-        except:
-            pass
+        except discord.Forbidden:
+            await channel.send(content=f"{member.mention} i don't seem to have perms to do this")
         embed = await oldembeds.user(osu_profile)
 
         if osu_profile.pp_raw:
@@ -267,8 +277,8 @@ class MemberVerification(commands.Cog):
                 await member.add_roles(country_role)
                 if pp_role:
                     await member.add_roles(pp_role)
-            except:
-                pass
+            except discord.Forbidden as e:
+                print(e)
             osu_profile = await self.get_osu_profile(user_db_lookup[0][0])
             if osu_profile:
                 name = osu_profile.name
@@ -299,7 +309,8 @@ class MemberVerification(commands.Cog):
     async def get_osu_profile(self, name):
         try:
             return await self.bot.osu.get_user(u=name)
-        except:
+        except aioosuapi_exceptions.HTTPException as e:
+            print(e)
             return None
 
     async def add_obligatory_reaction(self, message, osu_profile):
@@ -308,7 +319,7 @@ class MemberVerification(commands.Cog):
                 for stereotype in self.post_verification_emotes:
                     if osu_profile.country == stereotype[0]:
                         await message.add_reaction(stereotype[1])
-        except Exception as e:
+        except discord.Forbidden as e:
             print(e)
 
     def is_new_user(self, user):

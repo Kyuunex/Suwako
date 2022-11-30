@@ -89,7 +89,7 @@ class MemberInfoSyncing(commands.Cog):
 
                 try:
                     osu_profile = await self.bot.osu.get_user(u=db_user[1], event_days="1")
-                except Exception as e:
+                except aioosuapi_exceptions.HTTPException as e:
                     print(e)
                     await asyncio.sleep(120)
                     break
@@ -176,10 +176,7 @@ class MemberInfoSyncing(commands.Cog):
             return
         if int(db_user[8]) == 1:
             return
-        try:
-            if member.guild_permissions.administrator:
-                return
-        except:
+        if member.guild_permissions.administrator:
             return
 
         old_nickname = member.display_name
@@ -187,7 +184,10 @@ class MemberInfoSyncing(commands.Cog):
             await member.edit(nick=osu_profile.name)
             embed = await self.embed_nickname_updated(db_user, member, old_nickname, osu_profile)
             await notices_channel.send(embed=embed)
-        except:
+        except discord.Forbidden as e:
+            print(time.strftime("%Y/%m/%d %H:%M:%S %Z"))
+            print(f"in apply_nickname, error changing nickname of {member.display_name} ({member.id})")
+            print(e)
             embed = await self.embed_error_name_change(db_user, member, old_nickname, osu_profile)
             await notices_channel.send(embed=embed)
 
