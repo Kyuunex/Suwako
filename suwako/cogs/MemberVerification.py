@@ -25,6 +25,10 @@ class MemberVerification(commands.Cog):
             osu_profile = await self.bot.osu.get_user(u=osu_id)
             if osu_profile:
                 country_role = await self.get_country_role(member.guild, osu_profile.country)
+                if not country_role:
+                    await ctx.reply("no default_country role configured for this server")
+                    return
+
                 pp_role = await self.get_pp_role(member.guild, int(float(osu_profile.pp_raw)))
 
                 try:
@@ -218,6 +222,10 @@ class MemberVerification(commands.Cog):
 
         country_role = await self.get_country_role(member.guild, osu_profile.country)
         pp_role = await self.get_pp_role(member.guild, int(float(osu_profile.pp_raw)))
+        if not country_role:
+            await channel.send("this bot is misconfigured for this server. let the staff know and they can fix it. "
+                               "there is no default country role configured for this server")
+            return
 
         async with self.bot.db.execute("SELECT osu_id FROM users WHERE user_id = ?", [int(member.id)]) as cursor:
             already_linked_to = await cursor.fetchall()
@@ -272,6 +280,10 @@ class MemberVerification(commands.Cog):
             user_db_lookup = await cursor.fetchall()
         if user_db_lookup:
             country_role = await self.get_country_role(member.guild, str(user_db_lookup[0][3]))
+            if not country_role:
+                await channel.send("this bot is misconfigured for this server. let the staff know and they can fix it. "
+                                   "there is no default country role configured for this server")
+                return
             pp_role = await self.get_pp_role(member.guild, str(user_db_lookup[0][2]))
             try:
                 await member.add_roles(country_role)
