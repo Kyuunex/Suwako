@@ -3,6 +3,7 @@ import discord
 import time
 import asyncio
 import datetime
+from aioosuapi import exceptions as aioosuapi_exceptions
 
 
 class MemberInfoSyncing(commands.Cog):

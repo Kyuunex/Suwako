@@ -3,6 +3,7 @@ from discord.ext import commands
 from suwako.modules import permissions
 from suwako.reusables import send_large_message
 from suwako.embeds import oldembeds
+from aioosuapi import exceptions as aioosuapi_exceptions
 
 
 class MemberManagement(commands.Cog):

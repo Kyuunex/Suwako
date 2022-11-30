@@ -6,6 +6,7 @@ import sqlite3
 from discord.ext import commands
 from suwako.modules import permissions
 from suwako.embeds import oldembeds
+from aioosuapi import exceptions as aioosuapi_exceptions
 
 
 class MemberVerification(commands.Cog):
