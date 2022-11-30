@@ -1,7 +1,3 @@
-import sqlite3
-from suwako.modules.storage_management import database_file
-
-
 async def add_admins(self):
     async with await self.db.execute("SELECT user_id, permissions FROM admins") as cursor:
         admin_list = await cursor.fetchall()
@@ -18,10 +14,8 @@ async def add_admins(self):
         await self.db.commit()
 
 
-def ensure_tables():
-    conn = sqlite3.connect(database_file)
-    c = conn.cursor()
-    c.execute("""
+async def ensure_tables(db):
+    await db.execute("""
     CREATE TABLE IF NOT EXISTS "config" (
         "setting"    TEXT, 
         "parent"    TEXT,
@@ -29,58 +23,58 @@ def ensure_tables():
         "flag"    TEXT
     )
     """)
-    c.execute("""
+    await db.execute("""
     CREATE TABLE IF NOT EXISTS "admins" (
         "user_id"    INTEGER NOT NULL UNIQUE,
         "permissions"    INTEGER NOT NULL
     )
     """)
-    c.execute("""
+    await db.execute("""
     CREATE TABLE IF NOT EXISTS "ignored_users" (
         "user_id"    INTEGER NOT NULL UNIQUE,
         "reason"    TEXT
     )
     """)
-    c.execute("""
+    await db.execute("""
     CREATE TABLE IF NOT EXISTS "channels" (
         "setting"    TEXT NOT NULL,
         "guild_id"    INTEGER NOT NULL,
         "channel_id"    INTEGER NOT NULL
     )
     """)
-    c.execute("""
+    await db.execute("""
     CREATE TABLE IF NOT EXISTS "country_roles" (
         "country"    TEXT NOT NULL,
         "guild_id"    INTEGER NOT NULL,
         "role_id"    INTEGER NOT NULL
     )
     """)
-    c.execute("""
+    await db.execute("""
     CREATE TABLE IF NOT EXISTS "member_goodbye_messages" (
         "message"    TEXT NOT NULL UNIQUE
     )
     """)
-    c.execute("""
+    await db.execute("""
     CREATE TABLE IF NOT EXISTS "pp_roles" (
         "pp"    INTEGER NOT NULL,
         "guild_id"    INTEGER NOT NULL,
         "role_id"    INTEGER NOT NULL
     )
     """)
-    c.execute("""
+    await db.execute("""
     CREATE TABLE IF NOT EXISTS "restricted_users" (
         "guild_id"    INTEGER NOT NULL,
         "osu_id"    INTEGER NOT NULL
     )
     """)
-    c.execute("""
+    await db.execute("""
     CREATE TABLE IF NOT EXISTS "roles" (
         "setting"    TEXT NOT NULL,
         "guild_id"    INTEGER NOT NULL,
         "role_id"    INTEGER NOT NULL
     )
     """)
-    c.execute("""
+    await db.execute("""
     CREATE TABLE IF NOT EXISTS "users" (
         "user_id"    INTEGER NOT NULL UNIQUE,
         "osu_id"    INTEGER NOT NULL,
@@ -94,7 +88,8 @@ def ensure_tables():
         "confirmed"    INTEGER
     )
     """)
-    c.execute("INSERT OR IGNORE INTO member_goodbye_messages VALUES (?)", ["%s double tapped on hidamari no uta"])
-    c.execute("INSERT OR IGNORE INTO member_goodbye_messages VALUES (?)", ["%s missed the last note"])
-    conn.commit()
-    conn.close()
+    await db.execute("INSERT OR IGNORE INTO member_goodbye_messages VALUES (?)",
+                     ["%s double tapped on hidamari no uta"])
+    await db.execute("INSERT OR IGNORE INTO member_goodbye_messages VALUES (?)",
+                     ["%s missed the last note"])
+    await db.commit()

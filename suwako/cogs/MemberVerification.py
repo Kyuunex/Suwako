@@ -323,5 +323,5 @@ class MemberVerification(commands.Cog):
             return False
 
 
-def setup(bot):
-    bot.add_cog(MemberVerification(bot))
+async def setup(bot):
+    await bot.add_cog(MemberVerification(bot))

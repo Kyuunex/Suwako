@@ -221,5 +221,5 @@ class MemberInfoSyncing(commands.Cog):
         return embed
 
 
-def setup(bot):
-    bot.add_cog(MemberInfoSyncing(bot))
+async def setup(bot):
+    await bot.add_cog(MemberInfoSyncing(bot))
