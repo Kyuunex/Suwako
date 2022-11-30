@@ -53,7 +53,7 @@ class MemberInfoSyncing(commands.Cog):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             await asyncio.sleep(10)
-            print(time.strftime("%X %x %Z") + " | member_name_syncing_loop start")
+            print(time.strftime("%Y/%m/%d %H:%M:%S %Z") + " | member_name_syncing_loop start")
             async with self.bot.db.execute("SELECT guild_id, channel_id FROM channels WHERE setting = ?",
                                            ["notices"]) as cursor:
                 notices_channel_list = await cursor.fetchall()
@@ -75,7 +75,7 @@ class MemberInfoSyncing(commands.Cog):
 
                 await self.cycle_through_members(guild, notices_channel, restricted_user_list, user_list)
 
-            print(time.strftime("%X %x %Z") + " | member_name_syncing_loop finished")
+            print(time.strftime("%Y/%m/%d %H:%M:%S %Z") + " | member_name_syncing_loop finished")
             await asyncio.sleep(43200)
 
     async def cycle_through_members(self, guild, notices_channel, restricted_user_list, user_list):
