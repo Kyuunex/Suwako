@@ -92,7 +92,7 @@ async def ensure_tables(db):
     CREATE TABLE IF NOT EXISTS "probation_users" (
         "guild_id"    INTEGER NOT NULL,
         "user_id"    INTEGER NOT NULL,
-        "osu_id"    INTEGER NOT NULL
+        "osu_id"    INTEGER
     )
     """)
     await db.execute("INSERT OR IGNORE INTO member_goodbye_messages VALUES (?)",
