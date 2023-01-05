@@ -88,6 +88,13 @@ async def ensure_tables(db):
         "confirmed"    INTEGER
     )
     """)
+    await db.execute("""
+    CREATE TABLE IF NOT EXISTS "probation_users" (
+        "guild_id"    INTEGER NOT NULL,
+        "user_id"    INTEGER NOT NULL,
+        "osu_id"    INTEGER NOT NULL
+    )
+    """)
     await db.execute("INSERT OR IGNORE INTO member_goodbye_messages VALUES (?)",
                      ["%s double tapped on hidamari no uta"])
     await db.execute("INSERT OR IGNORE INTO member_goodbye_messages VALUES (?)",
