@@ -99,4 +99,10 @@ async def ensure_tables(db):
                      ["%s double tapped on hidamari no uta"])
     await db.execute("INSERT OR IGNORE INTO member_goodbye_messages VALUES (?)",
                      ["%s missed the last note"])
+    await db.execute("INSERT OR IGNORE INTO member_goodbye_messages VALUES (?)",
+                     ["%s got 726 pp"])
+    await db.execute("INSERT OR IGNORE INTO member_goodbye_messages VALUES (?)",
+                     ["%s wasn't here forever after all..."])
+    await db.execute("INSERT OR IGNORE INTO member_goodbye_messages VALUES (?)",
+                     ["%s quit w"])
     await db.commit()
