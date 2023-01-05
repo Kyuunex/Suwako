@@ -24,6 +24,7 @@ class MemberVerification(commands.Cog):
         if member:
             osu_profile = await self.bot.osu.get_user(u=osu_id)
             if osu_profile:
+                access_role = await self.get_access_role(member)
                 country_role = await self.get_country_role(member.guild, osu_profile.country)
                 if not country_role:
                     await ctx.reply("no default_country role configured for this server")
@@ -32,6 +33,7 @@ class MemberVerification(commands.Cog):
                 pp_role = await self.get_pp_role(member.guild, int(float(osu_profile.pp_raw)))
 
                 try:
+                    await member.add_roles(access_role)
                     await member.add_roles(country_role)
                     if pp_role:
                         await member.add_roles(pp_role)
@@ -183,6 +185,21 @@ class MemberVerification(commands.Cog):
                 if int(float(pp) / 1000) == int(float(role_id[0]) / 1000):
                     return guild.get_role(int(role_id[2]))
 
+    async def get_access_role(self, member):
+        async with self.bot.db.execute("SELECT user_id FROM probation_users WHERE user_id = ?", [member.id]) as cursor:
+            is_user_under_probation = await cursor.fetchall()
+
+        if is_user_under_probation:
+            role_to_get = "probation"
+        else:
+            role_to_get = "access"
+
+        async with self.bot.db.execute("SELECT role_id FROM roles WHERE setting = ? AND guild_id = ?",
+                                       [role_to_get, int(member.guild.id)]) as cursor:
+            role_id = await cursor.fetchone()
+
+        return member.guild.get_role(int(role_id[0]))
+
     async def respond_to_verification(self, message):
         split_message = []
         if "/" in message.content:
@@ -220,6 +237,7 @@ class MemberVerification(commands.Cog):
                                    "this error also pops up if you are restricted")
             return None
 
+        access_role = await self.get_access_role(member)
         country_role = await self.get_country_role(member.guild, osu_profile.country)
         pp_role = await self.get_pp_role(member.guild, int(float(osu_profile.pp_raw)))
         if not country_role:
@@ -236,6 +254,7 @@ class MemberVerification(commands.Cog):
                 return None
             else:
                 try:
+                    await member.add_roles(access_role)
                     await member.add_roles(country_role)
                     await member.edit(nick=osu_profile.name)
                 except discord.Forbidden:
@@ -253,6 +272,7 @@ class MemberVerification(commands.Cog):
                 return None
 
         try:
+            await member.add_roles(access_role)
             await member.add_roles(country_role)
             if pp_role:
                 await member.add_roles(pp_role)
@@ -279,6 +299,7 @@ class MemberVerification(commands.Cog):
                                        [int(member.id)]) as cursor:
             user_db_lookup = await cursor.fetchall()
         if user_db_lookup:
+            access_role = await self.get_access_role(member)
             country_role = await self.get_country_role(member.guild, str(user_db_lookup[0][3]))
             if not country_role:
                 await channel.send("this bot is misconfigured for this server. let the staff know and they can fix it. "
@@ -286,6 +307,7 @@ class MemberVerification(commands.Cog):
                 return
             pp_role = await self.get_pp_role(member.guild, str(user_db_lookup[0][2]))
             try:
+                await member.add_roles(access_role)
                 await member.add_roles(country_role)
                 if pp_role:
                     await member.add_roles(pp_role)
