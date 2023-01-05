@@ -1,4 +1,4 @@
-VERSION = "2.0.dev2"
+VERSION = "2.0.dev3"
 
 CONTRIBUTORS = [
     {
