@@ -17,7 +17,7 @@ setup(
     author_email='kyuunex@protonmail.ch',
     url='https://github.com/Kyuunex/Suwako',
     install_requires=[
-        'discord.py[voice]==2.1.0',
+        'discord.py[voice]==2.2.2',
         'pycountry',
         'aiosqlite',
         'aiohttp',
